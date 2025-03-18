@@ -277,7 +277,8 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
                 borderWidth: 2,
                 fill: 'start',
                 pointRadius: 0, // Hide points for cleaner look
-                pointHoverRadius: 5 // Show points on hover
+                pointHoverRadius: 5, // Show points on hover
+                tension: 0.4 // Add curvature to the line
             }]
         },
         options: {
