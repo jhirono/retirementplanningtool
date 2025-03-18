@@ -265,15 +265,40 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
         window.retirementChart.destroy();
     }
     
-    const ages = yearlyData.map(data => data.age);
-    const balances = yearlyData.map(data => data.balance / CONVERSION_FACTOR); // Convert to 万円 for display
+    // Determine if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    // Create a filtered dataset for mobile to reduce points
+    let displayData;
+    if (isMobile) {
+        // On mobile, only show key years (every 5 years plus significant points)
+        displayData = yearlyData.filter((data, index) => {
+            // Always show first and last points
+            if (index === 0 || index === yearlyData.length - 1) return true;
+            
+            // Always show retirement age
+            if (data.age === retirementAge) return true;
+            
+            // Always show pension start age
+            if (data.pensionIncome > 0 && index > 0 && yearlyData[index-1].pensionIncome === 0) return true;
+            
+            // Show every 10 years on mobile (instead of every year)
+            return data.age % 10 === 0;
+        });
+    } else {
+        // On desktop, show more points
+        displayData = yearlyData;
+    }
+    
+    const ages = displayData.map(data => data.age);
+    const balances = displayData.map(data => data.balance / CONVERSION_FACTOR); // Convert to 万円 for display
     
     // Find retirement and pension ages for visualization
-    const retirementIndex = yearlyData.findIndex(data => data.age === retirementAge);
-    const pensionIndex = yearlyData.findIndex(data => data.pensionIncome > 0);
+    const retirementIndex = ages.indexOf(retirementAge);
+    const pensionIndex = displayData.findIndex(data => data.pensionIncome > 0);
+    const displayPensionAge = pensionIndex !== -1 ? displayData[pensionIndex].age : null;
     
     // Mobile-optimized chart options
-    const isMobile = window.innerWidth <= 768;
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -289,24 +314,24 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
                 callbacks: {
                     label: function(context) {
                         const dataIndex = context.dataIndex;
-                        const data = yearlyData[dataIndex];
+                        const data = displayData[dataIndex];
                         const phase = data.phase === 'accumulation' ? '積立期間' : '退職期間';
                         return [
                             `年齢: ${data.age}歳 (${phase})`,
-                            `残高: ${formatManYen(balances[dataIndex])}`,
+                            `残高: ${formatManYen(balances[dataIndex], true)}`,
                             data.phase === 'accumulation' 
-                                ? `年間貯蓄: ${formatManYen(data.contribution / CONVERSION_FACTOR)} (インフレ調整済み)`
-                                : `年金収入: ${formatManYen(data.pensionIncome / CONVERSION_FACTOR)}`,
+                                ? `年間貯蓄: ${formatManYen(data.contribution / CONVERSION_FACTOR, true)} (インフレ調整済み)`
+                                : `年金収入: ${formatManYen(data.pensionIncome / CONVERSION_FACTOR, true)}`,
                             data.phase === 'retirement' 
-                                ? `年間支出: ${formatManYen(data.expenses / CONVERSION_FACTOR)}`
+                                ? `年間支出: ${formatManYen(data.expenses / CONVERSION_FACTOR, true)}`
                                 : '',
-                            `投資収益: ${formatManYen(data.interestEarned / CONVERSION_FACTOR)}`
+                            `投資収益: ${formatManYen(data.interestEarned / CONVERSION_FACTOR, true)}`
                         ].filter(text => text !== '');
                     }
                 }
             },
             legend: {
-                display: !isMobile // Hide legend on mobile
+                display: false // Hide legend on all screens
             },
             annotation: {
                 annotations: {
@@ -324,8 +349,8 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
                     },
                     pensionLine: pensionIndex !== -1 ? {
                         type: 'line',
-                        xMin: pensionAge,
-                        xMax: pensionAge,
+                        xMin: displayPensionAge,
+                        xMax: displayPensionAge,
                         borderColor: 'rgba(75, 192, 192, 0.8)',
                         borderWidth: 2,
                         label: {
@@ -353,7 +378,18 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
                 ticks: {
                     maxRotation: 0, // Prevent rotation
                     autoSkip: true, // Skip labels to fit
-                    maxTicksLimit: isMobile ? 6 : 10 // Fewer ticks on mobile
+                    maxTicksLimit: isMobile ? 5 : 10, // Even fewer ticks on mobile
+                    callback: function(value, index, values) {
+                        // Only show some labels on mobile
+                        const age = ages[index];
+                        if (isMobile) {
+                            if (index === 0 || index === ages.length - 1) return age;
+                            if (age === retirementAge || age === displayPensionAge) return age;
+                            if (age % 20 === 0) return age;
+                            return '';
+                        }
+                        return age;
+                    }
                 }
             }
         }
@@ -382,13 +418,13 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
 function formatCurrency(amount) {
     // Convert to 万円 for display
     const manYen = amount / CONVERSION_FACTOR;
-    return formatManYen(manYen);
+    return formatManYen(manYen, false);
 }
 
-function formatManYen(manYen) {
+function formatManYen(manYen, showDecimals = true) {
     // Format to Japanese currency style with 万円
     return new Intl.NumberFormat('ja-JP', {
-        maximumFractionDigits: 1,
+        maximumFractionDigits: showDecimals ? 1 : 0,
         minimumFractionDigits: 0
     }).format(manYen) + ' 万円';
 } 

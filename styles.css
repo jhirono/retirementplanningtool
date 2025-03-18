@@ -55,12 +55,12 @@ h1 {
 }
 
 .input-group label {
-    flex: 0 0 40%;
+    width: 40%;
     font-size: 0.95rem;
 }
 
 .input-group input {
-    flex: 0 0 45%;
+    width: calc(60% - 40px);
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -68,7 +68,9 @@ h1 {
 }
 
 .unit {
-    flex: 0 0 10%;
+    width: 30px;
+    display: inline-block;
+    text-align: left;
     margin-left: 10px;
     color: #666;
     white-space: nowrap;
@@ -180,8 +182,14 @@ button:hover {
 #chart-container {
     margin-bottom: 25px;
     height: 300px;
-    overflow: hidden;
     width: 100%;
+    overflow: hidden;
+}
+
+/* Remove the minimum width constraint */
+#balance-chart {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Table container for scrollable tables */
@@ -252,26 +260,32 @@ button:hover {
     }
     
     .input-group label {
-        flex: 0 0 40%;
+        width: 40%;
         margin-bottom: 0;
         font-size: 0.9rem;
     }
     
     .input-group input {
-        flex: 0 0 45%;
-        width: auto;
+        width: calc(60% - 30px);
         margin-bottom: 0;
         padding: 6px;
     }
     
     .unit {
-        flex: 0 0 10%;
+        width: 25px;
+        display: inline-block;
+        text-align: left;
         margin-left: 5px;
         font-size: 0.9rem;
     }
     
     #chart-container {
         height: 200px;
+    }
+    
+    /* Remove this min-width setting */
+    #balance-chart {
+        min-width: auto;
     }
     
     .result-table {
@@ -308,13 +322,16 @@ button:hover {
     }
     
     .input-group input {
-        flex: 0 0 40%;
+        width: calc(60% - 25px);
         padding: 4px;
         font-size: 0.9rem;
     }
     
     .unit {
-        flex: 0 0 15%;
+        width: 20px;
+        display: inline-block;
+        text-align: left;
+        margin-left: 5px;
         font-size: 0.85rem;
     }
     
