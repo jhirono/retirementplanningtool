@@ -43,13 +43,19 @@ function calculateRetirement() {
     // Simulate pre-retirement (accumulation phase) year by year
     const yearlyData = [];
     let accumulationBalance = currentSavings;
+    let monthlyContributionTracker = monthlyContribution;
     
     // Pre-retirement phase (accumulation)
     for (let year = 0; year < yearsToRetirement; year++) {
         const age = currentAge + year;
         
+        // Apply inflation to monthly contributions after the first year
+        if (year > 0) {
+            monthlyContributionTracker *= (1 + inflationRate);
+        }
+        
         // Annual contribution
-        const yearlyContribution = monthlyContribution * 12;
+        const yearlyContribution = monthlyContributionTracker * 12;
         
         // Calculate year-end balance
         const interestEarned = accumulationBalance * preRetirementReturn;
@@ -134,6 +140,7 @@ function calculateRetirement() {
         retirementAge,
         pensionAge,
         lifeExpectancy,
+        inflationRate,
         yearlyData
     });
 }
@@ -154,6 +161,10 @@ function displayResults(results) {
         <div class="summary-item">
             <span class="summary-label">資金が続く年齢:</span>
             <span>${results.lastAge}歳</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">インフレ調整について:</span>
+            <span class="explanation">毎月の貯蓄額は年々インフレ率(${(results.inflationRate*100).toFixed(0)}%)で増加し、退職後の支出と年金もインフレ率で調整されます。</span>
         </div>
     `;
     
@@ -299,7 +310,7 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
                                 `年齢: ${data.age}歳 (${phase})`,
                                 `残高: ${formatManYen(balances[dataIndex])}`,
                                 data.phase === 'accumulation' 
-                                    ? `年間貯蓄: ${formatManYen(data.contribution / CONVERSION_FACTOR)}`
+                                    ? `年間貯蓄: ${formatManYen(data.contribution / CONVERSION_FACTOR)} (インフレ調整済み)`
                                     : `年金収入: ${formatManYen(data.pensionIncome / CONVERSION_FACTOR)}`,
                                 data.phase === 'retirement' 
                                     ? `年間支出: ${formatManYen(data.expenses / CONVERSION_FACTOR)}`
