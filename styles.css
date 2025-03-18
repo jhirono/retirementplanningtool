@@ -1,0 +1,252 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #666;
+}
+
+.calculator {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.form-section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #2980b9;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.input-group label {
+    flex: 0 0 40%;
+    font-size: 0.95rem;
+}
+
+.input-group input {
+    flex: 0 0 45%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.unit {
+    flex: 0 0 10%;
+    margin-left: 10px;
+    color: #666;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+#results {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+}
+
+#results.hidden {
+    display: none;
+}
+
+#results h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#result-summary {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.summary-label {
+    font-weight: bold;
+    min-width: 160px;
+}
+
+.explanation {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #666;
+    padding-left: 160px;
+}
+
+.success {
+    color: #27ae60;
+}
+
+.warning {
+    color: #e74c3c;
+}
+
+/* Phase markers for explanation */
+.phase-markers {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+}
+
+.phase-marker {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.phase-marker.accumulation .dot {
+    background-color: #3498db;
+}
+
+.phase-marker.retirement .dot {
+    background-color: #e74c3c;
+}
+
+.phase-marker.pension .dot {
+    background-color: #2ecc71;
+}
+
+#chart-container {
+    margin-bottom: 25px;
+    height: 300px;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95rem;
+}
+
+.result-table th, 
+.result-table td {
+    padding: 10px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+}
+
+.result-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    text-align: center;
+}
+
+.result-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Add colors to table rows based on phase */
+.result-table tr.accumulation {
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.result-table tr.retirement {
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* Highlight the retirement year */
+.result-table tr.retirement:first-of-type {
+    border-top: 2px solid #e74c3c;
+    font-weight: bold;
+}
+
+/* Highlight years with important changes */
+.result-table tr.retirement td:first-child {
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .input-group label,
+    .input-group input {
+        flex: 0 0 100%;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .unit {
+        margin-left: 0;
+    }
+
+    .result-table {
+        font-size: 0.8rem;
+    }
+
+    .explanation {
+        padding-left: 0;
+    }
+} 
