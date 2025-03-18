@@ -71,6 +71,7 @@ h1 {
     flex: 0 0 10%;
     margin-left: 10px;
     color: #666;
+    white-space: nowrap;
 }
 
 button {
@@ -179,6 +180,15 @@ button:hover {
 #chart-container {
     margin-bottom: 25px;
     height: 300px;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Table container for scrollable tables */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .result-table {
@@ -226,27 +236,93 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-    .input-group {
-        flex-direction: column;
-        align-items: flex-start;
+    .container {
+        padding: 10px;
     }
     
-    .input-group label,
+    .calculator {
+        padding: 15px;
+    }
+    
+    .input-group {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .input-group label {
+        flex: 0 0 40%;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+    
     .input-group input {
-        flex: 0 0 100%;
-        width: 100%;
-        margin-bottom: 5px;
+        flex: 0 0 45%;
+        width: auto;
+        margin-bottom: 0;
+        padding: 6px;
     }
     
     .unit {
-        margin-left: 0;
+        flex: 0 0 10%;
+        margin-left: 5px;
+        font-size: 0.9rem;
     }
-
+    
+    #chart-container {
+        height: 200px;
+    }
+    
     .result-table {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        min-width: 500px; /* Ensure table doesn't shrink too much */
     }
-
+    
+    .result-table th, 
+    .result-table td {
+        padding: 6px 4px;
+    }
+    
     .explanation {
         padding-left: 0;
+    }
+    
+    .summary-label {
+        min-width: 130px;
+    }
+}
+
+/* Add additional tweaks for very small screens */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.4rem;
+    }
+    
+    .form-section h2 {
+        font-size: 1.1rem;
+    }
+    
+    .input-group label {
+        font-size: 0.85rem;
+    }
+    
+    .input-group input {
+        flex: 0 0 40%;
+        padding: 4px;
+        font-size: 0.9rem;
+    }
+    
+    .unit {
+        flex: 0 0 15%;
+        font-size: 0.85rem;
+    }
+    
+    #result-summary {
+        padding: 10px;
+    }
+    
+    .phase-marker {
+        font-size: 0.8rem;
     }
 } 

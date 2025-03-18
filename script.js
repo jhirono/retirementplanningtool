@@ -272,6 +272,93 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
     const retirementIndex = yearlyData.findIndex(data => data.age === retirementAge);
     const pensionIndex = yearlyData.findIndex(data => data.pensionIncome > 0);
     
+    // Mobile-optimized chart options
+    const isMobile = window.innerWidth <= 768;
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: '生涯の資産残高推移',
+                font: {
+                    size: isMobile ? 14 : 16
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const dataIndex = context.dataIndex;
+                        const data = yearlyData[dataIndex];
+                        const phase = data.phase === 'accumulation' ? '積立期間' : '退職期間';
+                        return [
+                            `年齢: ${data.age}歳 (${phase})`,
+                            `残高: ${formatManYen(balances[dataIndex])}`,
+                            data.phase === 'accumulation' 
+                                ? `年間貯蓄: ${formatManYen(data.contribution / CONVERSION_FACTOR)} (インフレ調整済み)`
+                                : `年金収入: ${formatManYen(data.pensionIncome / CONVERSION_FACTOR)}`,
+                            data.phase === 'retirement' 
+                                ? `年間支出: ${formatManYen(data.expenses / CONVERSION_FACTOR)}`
+                                : '',
+                            `投資収益: ${formatManYen(data.interestEarned / CONVERSION_FACTOR)}`
+                        ].filter(text => text !== '');
+                    }
+                }
+            },
+            legend: {
+                display: !isMobile // Hide legend on mobile
+            },
+            annotation: {
+                annotations: {
+                    retirementLine: {
+                        type: 'line',
+                        xMin: retirementAge,
+                        xMax: retirementAge,
+                        borderColor: 'rgba(255, 99, 132, 0.8)',
+                        borderWidth: 2,
+                        label: {
+                            content: '退職',
+                            display: !isMobile,
+                            position: 'start'
+                        }
+                    },
+                    pensionLine: pensionIndex !== -1 ? {
+                        type: 'line',
+                        xMin: pensionAge,
+                        xMax: pensionAge,
+                        borderColor: 'rgba(75, 192, 192, 0.8)',
+                        borderWidth: 2,
+                        label: {
+                            content: '年金開始',
+                            display: !isMobile,
+                            position: 'start'
+                        }
+                    } : undefined
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: !isMobile, // Hide title on mobile
+                    text: '資産残高 (万円)'
+                }
+            },
+            x: {
+                title: {
+                    display: !isMobile, // Hide title on mobile
+                    text: '年齢'
+                },
+                ticks: {
+                    maxRotation: 0, // Prevent rotation
+                    autoSkip: true, // Skip labels to fit
+                    maxTicksLimit: isMobile ? 6 : 10 // Fewer ticks on mobile
+                }
+            }
+        }
+    };
+    
     window.retirementChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -288,79 +375,7 @@ function createBalanceChart(yearlyData, retirementAge, pensionAge) {
                 tension: 0.4 // Add curvature to the line
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: '生涯の資産残高推移'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const dataIndex = context.dataIndex;
-                            const data = yearlyData[dataIndex];
-                            const phase = data.phase === 'accumulation' ? '積立期間' : '退職期間';
-                            return [
-                                `年齢: ${data.age}歳 (${phase})`,
-                                `残高: ${formatManYen(balances[dataIndex])}`,
-                                data.phase === 'accumulation' 
-                                    ? `年間貯蓄: ${formatManYen(data.contribution / CONVERSION_FACTOR)} (インフレ調整済み)`
-                                    : `年金収入: ${formatManYen(data.pensionIncome / CONVERSION_FACTOR)}`,
-                                data.phase === 'retirement' 
-                                    ? `年間支出: ${formatManYen(data.expenses / CONVERSION_FACTOR)}`
-                                    : '',
-                                `投資収益: ${formatManYen(data.interestEarned / CONVERSION_FACTOR)}`
-                            ].filter(text => text !== '');
-                        }
-                    }
-                },
-                annotation: {
-                    annotations: {
-                        retirementLine: {
-                            type: 'line',
-                            xMin: retirementAge,
-                            xMax: retirementAge,
-                            borderColor: 'rgba(255, 99, 132, 0.8)',
-                            borderWidth: 2,
-                            label: {
-                                content: '退職',
-                                display: true,
-                                position: 'start'
-                            }
-                        },
-                        pensionLine: pensionIndex !== -1 ? {
-                            type: 'line',
-                            xMin: pensionAge,
-                            xMax: pensionAge,
-                            borderColor: 'rgba(75, 192, 192, 0.8)',
-                            borderWidth: 2,
-                            label: {
-                                content: '年金開始',
-                                display: true,
-                                position: 'start'
-                            }
-                        } : undefined
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: '資産残高 (万円)'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: '年齢'
-                    }
-                }
-            }
-        }
+        options: chartOptions
     });
 }
 
