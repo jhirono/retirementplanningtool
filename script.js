@@ -162,10 +162,6 @@ function displayResults(results) {
             <span class="summary-label">資金が続く年齢:</span>
             <span>${results.lastAge}歳</span>
         </div>
-        <div class="summary-item">
-            <span class="summary-label">インフレ調整について:</span>
-            <span class="explanation">毎月の貯蓄額は年々インフレ率(${(results.inflationRate*100).toFixed(0)}%)で増加し、退職後の支出と年金もインフレ率で調整されます。</span>
-        </div>
     `;
     
     if (results.isOnTrack) {
